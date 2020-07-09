@@ -3,7 +3,7 @@ const errorTypes = require("./constants/messages");
 const Status = require("./helpers/Status");
 const DATE_FORMAT = "dd/MM/yyyy";
 
-const parseArgs = (startDateString, endDateString) => {
+const parseDates = (startDateString, endDateString) => {
   if (!startDateString || !endDateString) {
     return new Status("MISSING_ARG", errorTypes.MISSING_ARG);
   }
@@ -25,4 +25,4 @@ const parseArgs = (startDateString, endDateString) => {
   return new Status("SUCCESS", { startDate, endDate });
 };
 
-module.exports = parseArgs;
+module.exports = parseDates;

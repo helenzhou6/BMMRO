@@ -1,6 +1,6 @@
 const firebase = require("firebase");
 const checkMissingConfig = require("./src/checkMissingConfig");
-const parseArgs = require("./src/parseArgs");
+const parseDates = require("./src/parseDates");
 const queryDataByTimeInterval = require("./src/queryDataByTimeInterval");
 const transformJsonToCsv = require("./src/transformJsonToCsv");
 const generateFilename = require("./src/generateFilename");
@@ -20,7 +20,7 @@ const exportData = async (
   const configStatus = checkMissingConfig(projectId, apiKey, email, password);
   if (!configStatus.isSuccessful()) return configStatus;
 
-  const argsStatus = parseArgs(startDateString, endDateString);
+  const argsStatus = parseDates(startDateString, endDateString);
   if (!argsStatus.isSuccessful()) return argsStatus;
   const { startDate, endDate } = argsStatus.value;
 
