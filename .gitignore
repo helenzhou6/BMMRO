@@ -121,3 +121,6 @@ firebase-debug.log*
 
 ## Exported data
 /scripts/exported
+
+## Static build
+/scripts/dist

@@ -1,4 +1,5 @@
 const convertDateToMDY = require("../convertDateToMDY");
+const prependFromFirestore = require("../prependFromFirestore");
 
 module.exports = {
   habitatUse: {
@@ -29,6 +30,9 @@ module.exports = {
     "End Time": { key: "endTime" },
     "Group Composition": { key: "groupComposition" },
     "# animals": { key: "numberOfAnimals" },
-    Comment: { key: "comments" },
+    Comment: {
+      key: "comments",
+      transform: prependFromFirestore,
+    },
   },
 };

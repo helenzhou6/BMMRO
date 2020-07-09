@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <meta content="utf-8" http-equiv="encoding" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+    <title>BMMRO Data Export</title>
+  </head>
+  <body>
+    <form id="download-csv-form">
+      <input name="projectId" required type="text" placeholder="project id" />
+      <input name="apiKey" required type="text" placeholder="api key" />
+      <input name="authDomain" required type="text" placeholder="auth domain" />
+      <input name="email" required type="email" placeholder="email" />
+      <input name="password" required type="password" placeholder="password" />
+      <input
+        name="startDateString"
+        type="text"
+        placeholder="start date, eg. 15/07/2020"
+      />
+      <input
+        name="endDateString"
+        type="text"
+        placeholder="end date, eg. 15/07/2020"
+      />
+      <button id="submit-button" type="submit">
+        Download as CSV
+      </button>
+    </form>
+
+    <script>
+      function downloadCsv(data, filename) {
+        const element = document.createElement("a");
+        element.setAttribute(
+          "href",
+          "data:text/plain;charset=utf-8," + encodeURIComponent(data)
+        );
+        element.setAttribute("download", filename);
+        element.style.display = "none";
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+      }
+
+      function postDownload() {
+        document.getElementById("submit-button").setAttribute("disabled", true);
+        const refreshText = document.createElement("p");
+        refreshText.textContent =
+          "Please refresh this page to use this form again.";
+        document.body.appendChild(refreshText);
+      }
+
+      function getCsv(event) {
+        event.preventDefault();
+        window
+          .exportData(
+            event.target.projectId.value,
+            event.target.apiKey.value,
+            event.target.authDomain.value,
+            event.target.email.value,
+            event.target.password.value,
+            event.target.startDateString.value,
+            event.target.endDateString.value
+          )
+          .then((status) => {
+            console.log(status);
+            if (status.isSuccessful()) {
+              const { data, filename } = status.value;
+              downloadCsv(data, filename);
+            } else {
+              alert(status.value);
+            }
+
+            postDownload();
+          });
+      }
+
+      document
+        .getElementById("download-csv-form")
+        .addEventListener("submit", getCsv);
+    </script>
+  </body>
+</html>

@@ -1,5 +1,5 @@
 const firebaseTesting = require("@firebase/testing");
-const _queryDataByTimeInterval = require("../queryDataByTimeInterval");
+const queryDataByTimeInterval = require("../queryDataByTimeInterval");
 const { parse } = require("date-fns");
 const testEntries = require("../__fixtures__/testdata");
 
@@ -32,7 +32,7 @@ describe("queryDataByTimeInterval", () => {
     const startDate = parse("10/05/2020", DATE_FORMAT, new Date());
     const endDate = parse("28/06/2020", DATE_FORMAT, new Date());
 
-    const results = await _queryDataByTimeInterval(
+    const queryStatus = await queryDataByTimeInterval(
       startDate,
       endDate,
       TIMESTAMP_FIELD_NAME,
@@ -40,8 +40,9 @@ describe("queryDataByTimeInterval", () => {
       collectionName
     );
 
-    expect(results.length).toEqual(2);
-    const resultAnimalNumbers = results.map((r) => r.numberOfAnimals);
+    expect(queryStatus.isSuccessful()).toBe(true);
+    expect(queryStatus.value.length).toEqual(2);
+    const resultAnimalNumbers = queryStatus.value.map((r) => r.numberOfAnimals);
     expect(resultAnimalNumbers).toContain(1);
     expect(resultAnimalNumbers).toContain(2);
     expect(resultAnimalNumbers).not.toContain(5);
@@ -51,7 +52,7 @@ describe("queryDataByTimeInterval", () => {
     startDate = parse("23/05/2020", DATE_FORMAT, new Date());
     endDate = parse("23/06/2020", DATE_FORMAT, new Date());
 
-    const results = await _queryDataByTimeInterval(
+    const queryStatus = await queryDataByTimeInterval(
       startDate,
       endDate,
       TIMESTAMP_FIELD_NAME,
@@ -59,8 +60,9 @@ describe("queryDataByTimeInterval", () => {
       collectionName
     );
 
-    expect(results.length).toEqual(1);
-    const resultAnimalNumbers = results.map((r) => r.numberOfAnimals);
+    expect(queryStatus.value.length).toEqual(1);
+    expect(queryStatus.value.length).toEqual(1);
+    const resultAnimalNumbers = queryStatus.value.map((r) => r.numberOfAnimals);
     expect(resultAnimalNumbers).toContain(1);
     expect(resultAnimalNumbers).not.toContain(2);
   });
@@ -69,7 +71,7 @@ describe("queryDataByTimeInterval", () => {
     startDate = parse("10/02/2020", DATE_FORMAT, new Date());
     endDate = parse("28/02/2020", DATE_FORMAT, new Date());
 
-    const results = await _queryDataByTimeInterval(
+    const queryStatus = await queryDataByTimeInterval(
       startDate,
       endDate,
       TIMESTAMP_FIELD_NAME,
@@ -77,6 +79,7 @@ describe("queryDataByTimeInterval", () => {
       collectionName
     );
 
-    expect(results).toEqual([]);
+    expect(queryStatus.isSuccessful()).toBe(false);
+    expect(queryStatus.status).toEqual("NO_DATA");
   });
 });

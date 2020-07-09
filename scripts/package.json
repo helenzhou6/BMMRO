@@ -5,6 +5,7 @@
   "main": "export-data.js",
   "scripts": {
     "start": "node ./index.js",
+    "build": "rm -f ./dist/bundle-*.js && webpack",
     "test": "firebase emulators:exec --only firestore 'jest ./src'"
   },
   "author": "",
@@ -17,6 +18,9 @@
   },
   "devDependencies": {
     "@firebase/testing": "^0.15.0",
-    "jest": "^25.0.0"
+    "html-webpack-plugin": "^4.3.0",
+    "jest": "^25.0.0",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12"
   }
 }

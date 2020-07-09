@@ -1,54 +1,56 @@
 const firebase = require("firebase");
-const logToStdErrAndExit = require("./src/helpers/logToStdErrAndExit");
 const checkMissingConfig = require("./src/checkMissingConfig");
 const parseArgs = require("./src/parseArgs");
 const queryDataByTimeInterval = require("./src/queryDataByTimeInterval");
 const transformJsonToCsv = require("./src/transformJsonToCsv");
-const writeDataToFile = require("./src/writeDataToFile");
-const logAndExit = require("./src/helpers/logAndExit");
 const generateFilename = require("./src/generateFilename");
-const messages = require("./src/constants/messages");
+const signIn = require("./src/signIn");
+const Status = require("./src/helpers/Status");
 const collectionName = "habitatUse";
 const timestampFieldName = "timestamp";
-const dirName = "./exported";
 
-const exportData = async () => {
+const exportData = async (
+  projectId,
+  apiKey,
+  authDomain,
+  email,
+  password,
+  startDateString,
+  endDateString
+) => {
   const configStatus = checkMissingConfig(
-    process.env.PROJECT_ID,
-    process.env.API_KEY,
-    process.env.AUTH_DOMAIN,
-    process.env.EMAIL,
-    process.env.PASSWORD
+    projectId,
+    apiKey,
+    authDomain,
+    email,
+    password
   );
-  if (!configStatus.isSuccessful()) logToStdErrAndExit(configStatus.value);
+  if (!configStatus.isSuccessful()) return configStatus;
 
-  const argsStatus = parseArgs([...process.argv]);
-  if (!argsStatus.isSuccessful()) logToStdErrAndExit(argsStatus.value);
+  const argsStatus = parseArgs(["bla", "bla", startDateString, endDateString]);
+  if (!argsStatus.isSuccessful()) return argsStatus;
   const { startDate, endDate } = argsStatus.value;
 
-  firebase.initializeApp({
-    projectId: process.env.PROJECT_ID,
-    apiKey: process.env.API_KEY,
-    authDomain: process.env.AUTH_DOMAIN,
-  });
-  await firebase
-    .auth()
-    .signInWithEmailAndPassword(process.env.EMAIL, process.env.PASSWORD)
-    .catch((e) => logToStdErrAndExit(e.message));
+  firebase.initializeApp({ projectId, apiKey, authDomain });
+  const signInResult = await signIn(email, password);
+  if (!signInResult.isSuccessful()) return signInResult;
 
-  const timerangeJsonData = await queryDataByTimeInterval(
+  const timeRangeDataStatus = await queryDataByTimeInterval(
     startDate,
     endDate,
     timestampFieldName,
     firebase.firestore(),
     collectionName
   );
-  if (timerangeJsonData.length === 0) logAndExit(messages.NO_DATA);
+  if (!timeRangeDataStatus.isSuccessful()) return timeRangeDataStatus;
 
-  const csvData = transformJsonToCsv(timerangeJsonData);
+  const csvData = transformJsonToCsv(timeRangeDataStatus.value);
+  const filename = generateFilename(startDate, endDate);
 
-  const fileName = generateFilename(startDate, endDate);
-  writeDataToFile(dirName, fileName, csvData);
+  return new Status("SUCCESS", {
+    data: csvData,
+    filename,
+  });
 };
 
 module.exports = exportData;
