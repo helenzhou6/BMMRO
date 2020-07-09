@@ -12,7 +12,6 @@
   "license": "ISC",
   "dependencies": {
     "date-fns": "^2.14.0",
-    "dotenv": "^8.2.0",
     "firebase": "^7.15.4",
     "json2csv": "^5.0.1"
   },

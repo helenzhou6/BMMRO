@@ -12,26 +12,19 @@ const timestampFieldName = "timestamp";
 const exportData = async (
   projectId,
   apiKey,
-  authDomain,
   email,
   password,
   startDateString,
   endDateString
 ) => {
-  const configStatus = checkMissingConfig(
-    projectId,
-    apiKey,
-    authDomain,
-    email,
-    password
-  );
+  const configStatus = checkMissingConfig(projectId, apiKey, email, password);
   if (!configStatus.isSuccessful()) return configStatus;
 
-  const argsStatus = parseArgs(["bla", "bla", startDateString, endDateString]);
+  const argsStatus = parseArgs(startDateString, endDateString);
   if (!argsStatus.isSuccessful()) return argsStatus;
   const { startDate, endDate } = argsStatus.value;
 
-  firebase.initializeApp({ projectId, apiKey, authDomain });
+  firebase.initializeApp({ projectId, apiKey });
   const signInResult = await signIn(email, password);
   if (!signInResult.isSuccessful()) return signInResult;
 
