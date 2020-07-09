@@ -117,10 +117,10 @@ firebase-debug.log*
 .DS_Store
 .vscode
 
-# Scripts
+# Export-data tool
 
 ## Exported data
-/scripts/exported
+/export-data/exported
 
 ## Static build
-/scripts/dist
+/export-data/dist
