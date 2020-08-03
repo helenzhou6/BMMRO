@@ -56,12 +56,13 @@ const NumberInput = ({
     <div>
       <label css={styles.label}>
         <span>{labelText}</span>
-        <input {...field} type="number" css={styles.input} />
+        <input data-testid={name} {...field} type="number" css={styles.input} />
       </label>
       <FieldError
         touched={meta.touched}
-        errorMessage={meta.error}
+        errorMessage={meta.error && meta.error.message}
         labelText={labelText}
+        testId={meta.error && `error-${meta.error.type}-${name}`}
       />
     </div>
   );

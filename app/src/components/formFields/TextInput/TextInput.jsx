@@ -36,13 +36,19 @@ const TextInput = ({ name, labelText, maxLength, isRequired, isShort }) => {
         {isRequired ? <span css={styles.required}>*</span> : ""}
 
         <div css={styles.inputContainer}>
-          <input {...field} css={styles.input} aria-label={labelText} />
+          <input
+            data-testid={name}
+            {...field}
+            css={styles.input}
+            aria-label={labelText}
+          />
         </div>
       </label>
       <FieldError
         touched={meta.touched}
-        errorMessage={meta.error}
+        errorMessage={meta.error && meta.error.message}
         labelText={labelText}
+        testId={meta.error && `error-${meta.error.type}-${name}`}
       />
     </div>
   );

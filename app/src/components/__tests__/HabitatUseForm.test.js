@@ -11,7 +11,7 @@ import { FirebaseContext } from "../../firebaseContext/firebaseContext";
 import numericFields from "../../forms/habitatUse/testCases/numericFields.json";
 import textFields from "../../forms/habitatUse/testCases/textFields.json";
 import selectFields from "../../forms/habitatUse/testCases/selectFields.json";
-import timeFields from "../../forms/habitatUse/testCases/timeFields.json";
+// import timeFields from "../../forms/habitatUse/testCases/timeFields.json";
 
 describe("Habitat Use Form validation", () => {
   const testFieldInput = (testDescription, fieldId, testCase) => {
@@ -112,17 +112,17 @@ describe("Habitat Use Form validation", () => {
     afterAll(() => (Date.now = originalDateNow));
     afterEach(() => cleanup());
 
-    timeFields.forEach((field) => {
-      describe(field.id, () => {
-        field.testCases.forEach((testCase) => {
-          const valueDescription = !!testCase.value
-            ? `value ${testCase.value}`
-            : "empty value";
-          const testDescription = `Should have error of type '${testCase.error}' for ${valueDescription}`;
-          testFieldInput(testDescription, field.id, testCase);
-        });
-      });
-    });
+    //timeFields.forEach((field) => {
+    //   describe(field.id, () => {
+    //     field.testCases.forEach((testCase) => {
+    //       const valueDescription = !!testCase.value
+    //         ? `value ${testCase.value}`
+    //         : "empty value";
+    //       const testDescription = `Should have error of type '${testCase.error}' for ${valueDescription}`;
+    //       testFieldInput(testDescription, field.id, testCase);
+    //     });
+    //   });
+    // });
   });
 
   describe("Autofill", () => {

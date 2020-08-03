@@ -34,12 +34,18 @@ const TextAreaInput = ({ name, labelText, maxLength, isRequired }) => {
     <div>
       <label css={styles.label}>
         <span>{labelText}</span>
-        <textarea {...field} css={styles.input} aria-label={labelText} />
+        <textarea
+          data-testid={name}
+          {...field}
+          css={styles.input}
+          aria-label={labelText}
+        />
       </label>
       <FieldError
         touched={meta.touched}
-        errorMessage={meta.error}
+        errorMessage={meta.error && meta.error.message}
         labelText={labelText}
+        testId={meta.error && `error-${meta.error.type}-${name}`}
       />
     </div>
   );

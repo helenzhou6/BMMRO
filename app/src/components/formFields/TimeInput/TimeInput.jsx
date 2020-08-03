@@ -46,6 +46,7 @@ const TimeInput = ({ name, labelText, autofill }) => {
       <label css={styles.label}>
         <span>{labelText}</span>
         <InputMask
+          data-testid={name}
           {...field}
           mask="99:99"
           css={styles.input}
@@ -54,8 +55,9 @@ const TimeInput = ({ name, labelText, autofill }) => {
       </label>
       <FieldError
         touched={meta.touched}
-        errorMessage={meta.error}
+        errorMessage={meta.error && meta.error.message}
         labelText={labelText}
+        testId={meta.error && `error-${meta.error.type}-${name}`}
       />
     </div>
   );

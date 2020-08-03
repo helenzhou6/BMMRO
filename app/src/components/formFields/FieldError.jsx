@@ -2,7 +2,7 @@
 import { css, jsx } from "@emotion/core";
 import colors from "../../materials/colors";
 
-const FieldError = ({ touched, errorMessage, labelText }) => {
+const FieldError = ({ touched, errorMessage, labelText, testId }) => {
   const styles = {
     error: css`
       color: ${colors.darkRed};
@@ -17,7 +17,12 @@ const FieldError = ({ touched, errorMessage, labelText }) => {
 
   return (
     <div css={styles.container}>
-      <div role="alert" aria-label={labelText} css={styles.error}>
+      <div
+        data-testid={testId}
+        role="alert"
+        aria-label={labelText}
+        css={styles.error}
+      >
         {errorMessage}
       </div>
     </div>

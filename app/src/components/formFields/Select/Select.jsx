@@ -27,7 +27,12 @@ const Select = ({ name, labelText, isRequired, options }) => {
         {isRequired ? <span css={styles.required}>*</span> : ""}
 
         <div css={styles.selectContainer}>
-          <select {...field} css={styles.select} aria-label={labelText}>
+          <select
+            data-testid={name}
+            {...field}
+            css={styles.select}
+            aria-label={labelText}
+          >
             <option key="none" value="" aria-label="default empty option">
               -- Please select option --
             </option>
@@ -41,8 +46,9 @@ const Select = ({ name, labelText, isRequired, options }) => {
       </label>
       <FieldError
         touched={meta.touched}
-        errorMessage={meta.error}
+        errorMessage={meta.error && meta.error.message}
         labelText={labelText}
+        testId={meta.error && `error-${meta.error.type}-${name}`}
       />
     </div>
   );
