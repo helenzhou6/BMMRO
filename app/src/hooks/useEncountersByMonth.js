@@ -1,117 +1,6 @@
 import { useState, useEffect } from "react";
-
-const mockTodayData = [
-  {
-    entries: [
-      {
-        id: "dd3X7JCm9ZeNy6HFPCyC",
-        data: {
-          highTide: "",
-          tagSuccess: "not-noted",
-          area: "Bimini",
-          audioRec: "",
-          encounterNumber: "",
-          startTimestamp: new Date("2020-08-13T23:00:00.000Z"),
-          lowTide: "",
-          numSubAdultMale: "",
-          biopsySuccess: "not-noted",
-          exported: true,
-          project: "",
-          visualIdentifications: "",
-          numYoungOfYear: "",
-          logbookNumber: "",
-          numSubAdult: "",
-          comments: "",
-          species: "Bottlenose dolphin - oceanic",
-          location: "",
-          needsToBeChecked: true,
-          numAdultFemale: "",
-          elapsedTime: "",
-          numSubAdultFemale: "",
-          groupSize: "",
-          transect: "Off",
-          numJuvenileFemale: "",
-          endTime: "",
-          videoRec: "",
-          numAdultMale: "",
-          tagAttempt: "No",
-          numNeonates: "",
-          vessel: "",
-          numUnknown: "",
-          sequenceNumber: "E777",
-          enteredBy: "Research Assistant",
-          cue: "",
-          reasonForLeaving: "",
-          exportedOn: {
-            seconds: 1597312483,
-            nanoseconds: 917000000,
-          },
-          numJuvenileMale: "",
-          observers: "",
-          endOfSearchEffort: "",
-          biopsyAttempt: "No",
-          numAdultUnknown: "",
-          startTime: "10:14",
-          photographerFrameNumber: "",
-          numJuvenileUnknown: "",
-        },
-      },
-      {
-        id: "wTUC5WV4Vcvt6rW89rnt",
-        data: {
-          encounterNumber: "",
-          exportedOn: {
-            seconds: 1597312483,
-            nanoseconds: 917000000,
-          },
-          endOfSearchEffort: "",
-          species: "Bottlenose dolphin - oceanic",
-          vessel: "",
-          numAdultFemale: "",
-          photographerFrameNumber: "",
-          numSubAdultMale: "",
-          area: "Cat Island",
-          highTide: "",
-          needsToBeChecked: true,
-          transect: "Off",
-          numYoungOfYear: "",
-          elapsedTime: "",
-          comments: "",
-          biopsyAttempt: "No",
-          numSubAdultFemale: "",
-          tagSuccess: "not-noted",
-          videoRec: "",
-          visualIdentifications: "",
-          cue: "",
-          startTime: "10:42",
-          numAdultUnknown: "",
-          numNeonates: "",
-          location: "",
-          reasonForLeaving: "",
-          audioRec: "",
-          project: "",
-          endTime: "",
-          lowTide: "",
-          numJuvenileUnknown: "",
-          numSubAdult: "",
-          sequenceNumber: "E99",
-          exported: true,
-          logbookNumber: "",
-          tagAttempt: "No",
-          startTimestamp: new Date("2020-08-13T23:00:00.000Z"),
-          numJuvenileFemale: "",
-          observers: "",
-          numUnknown: "",
-          numJuvenileMale: "",
-          enteredBy: "Research Assistant",
-          numAdultMale: "",
-          biopsySuccess: "not-noted",
-          groupSize: "",
-        },
-      },
-    ],
-  },
-];
+import { CollectionNames } from "../constants/datastore";
+import groupBy from "lodash/groupBy";
 
 const mockPreviousData = [
   {
@@ -560,14 +449,69 @@ const mockPreviousData = [
   },
 ];
 
+const extractEncounterProperties = (encounter) => {
+  const { startTimestamp, species, area, sequenceNumber } = encounter.data;
+  return {
+    id: encounter.id,
+    data: {
+      startTimestamp,
+      species,
+      area,
+      sequenceNumber,
+    },
+  };
+};
+
+const getPreviousEncountersByTimeRange = async (
+  datastore,
+  startDate,
+  endDate
+) => {
+  const encounters = await datastore.readDocsByTimeRange(
+    CollectionNames.ENCOUNTER,
+    "startTimestamp",
+    startDate,
+    endDate
+  );
+
+  const extractedEncounters = encounters.map((encounter) =>
+    extractEncounterProperties(encounter)
+  );
+};
+
 const useEncountersByMonth = (datastore) => {
   const [todaysEncounters, setTodaysEncounters] = useState([]);
   const [previousEncounters, setPreviousEncounters] = useState([]);
 
   useEffect(() => {
-    setTodaysEncounters(mockTodayData);
+    const getData = async (datastore) => {
+      const todaysData = await datastore.readDocsByTimeRange(
+        CollectionNames.ENCOUNTER,
+        "startTimestamp",
+        // TODO: why from Date.now() to Date.now() doesn't work?
+        new Date(2020, 5, 15),
+        new Date(Date.now())
+      );
+
+      console.log(
+        groupBy(todaysData, (item) => {
+          return item.data.startTimestamp.getMonth()
+        })
+      );
+
+      if (!!todaysData.length) {
+        const todaysEncounters = todaysData.map((entry) =>
+          extractEncounterProperties(entry)
+        );
+        setTodaysEncounters([{ entries: todaysEncounters }]);
+      }
+    };
     setPreviousEncounters(mockPreviousData);
-  }, []);
+
+    if (!!datastore) {
+      getData(datastore);
+    }
+  }, [datastore]);
 
   return [
     todaysEncounters,
